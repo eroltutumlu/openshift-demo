@@ -1,19 +1,16 @@
 pipeline {
     agent any
-
+    environment {
+        EMAIL_RECIPIENTS = 'eroltutumlu@gmail.com'
+    }
     stages {
         stage("build") {
             steps {
                 echo 'building the application...'
                                 echo "Java VERSION"
                 sh 'java -version'
-                echo "Maven VERSION"
-                sh 'mvn -version'
-                echo 'building project...'
-                sh "mvn compile"
-                sh "mvn package"
-                //sh "mvn test"
-                sh "mvn clean install"
+                          sh "'${mvnHome}/bin/mvn' -Dintegration-tests.skip=true -Dbuild.number=${targetVersion} clean package"
+
             }
         }
 
@@ -29,4 +26,27 @@ pipeline {
             }
         }
     }
+}
+    post {
+        // Always runs. And it runs before any of the other post conditions.
+        always {
+            // Let's wipe out the workspace before we finish!
+            deleteDir()
+        }
+        success {
+            sendEmail("Successful");
+        }
+        unstable {
+            sendEmail("Unstable");
+        }
+        failure {
+            sendEmail("Failed");
+        }
+    }
+
+def sendEmail(status) {
+    mail(
+            to: "$EMAIL_RECIPIENTS",
+            subject: "Build $BUILD_NUMBER - " + status + " (${currentBuild.fullDisplayName})",
+            body: "Changes:\n " + getChangeString() + "\n\n Check console output at: $BUILD_URL/console" + "\n")
 }
