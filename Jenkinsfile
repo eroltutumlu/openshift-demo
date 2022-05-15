@@ -9,6 +9,7 @@ pipeline {
                 echo 'building the application...'
                                 echo "Java VERSION"
                 sh 'java -version'
+                def mvnHome = tool 'Maven 3.5.2'
                           sh "'${mvnHome}/bin/mvn' -Dintegration-tests.skip=true -Dbuild.number=${targetVersion} clean package"
 
             }
