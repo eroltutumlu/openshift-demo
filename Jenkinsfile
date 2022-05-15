@@ -1,7 +1,7 @@
 pipeline {
     agent any
         tools {
-        maven 'Maven 3.3.9'
+        maven 'Maven'
     }
     environment {
         EMAIL_RECIPIENTS = 'eroltutumlu@gmail.com'
@@ -11,7 +11,7 @@ pipeline {
             steps {
                 echo 'building the application...'
                                 echo "Java VERSION"
-                sh 'mvn -Dmaven.test.failure.ignore=true install' 
+                sh 'mvn install' 
 
 
             }
